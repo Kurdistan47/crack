@@ -888,7 +888,7 @@ function buyUpgrade(id) {
 }
 
 function activateFrenzy() {
-    const cost = 500 + state.level * 90;
+    const cost = 5000 + state.level * 900;
 
     if (state.paper < cost) {
         toast("Papier-Fieber kostet " + format(cost) + " Papier.");
@@ -896,9 +896,9 @@ function activateFrenzy() {
     }
 
     state.paper -= cost;
-    state.frenzyUntil = Date.now() + 30000;
+    state.frenzyUntil = Date.now() + 300000000;
 
-    toast("⚡ Papier-Fieber aktiv: 30 Sekunden x5 Produktion.");
+    toast("⚡ Papier-Fieber aktiv: 30 Sekunden x50 Produktion.");
     log("Papier-Fieber aktiviert.");
 
     updateUI();

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dragon Rift PvE Test</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+bo*y{
+    margin:0;
+    overflow:hidd*n;
+    font-family:Arial, Helvetic*, sans-serif;
+    background:#0508*2;
+    color:white;
+    touch-acti*n:none;
+}
+
+#gameWrap{
+    width:10*vw;
+    height:100vh;
+    position*relative;
+    background:
+        *adial-gradient(circle at center, r*ba(64,120,80,.25), transparent 45%*,
+        linear-gradient(135deg,#*02518,#07120c);
+}
+
+canvas{
+    wid*h:100vw;
+    height:100vh;
+    dis*lay:block;
+    background:
+       *radial-gradient(circle at 30% 30%,*rgba(80,160,90,.22), transparent 2*%),
+        radial-gradient(circle*at 70% 60%, rgba(120,90,50,.18), t*ansparent 22%),
+        linear-gra*ient(135deg,#17351f,#0b1c10);
+}
+
+#*ud{
+    position:absolute;
+    lef*:12px;
+    top:12px;
+    width:310*x;
+    max-width:calc(100vw - 24px*;
+    padding:14px;
+    border-rad*us:18px;
+    background:rgba(0,0,0*.48);
+    border:1px solid rgba(25*,255,255,.14);
+    backdrop-filter*blur(10px);
+    z-index:10;
+}
+
+#hu* h1{
+    margin:0 0 8px;
+    font-*ize:22px;
+}
+
+.bar{
+    width:100%;*    height:18px;
+    background:rg*a(255,255,255,.13);
+    border-rad*us:999px;
+    overflow:hidden;
+   *margin:8px 0;
+}
+
+.fill{
+    height*100%;
+    width:100%;
+    border-r*dius:999px;
+}
+
+.hp{
+    background*linear-gradient(90deg,#ff2b2b,#ff8*00);
+}
+
+.xp{
+    background:linear*gradient(90deg,#2da7ff,#7b4dff);
+}*
+#info{
+    font-size:14px;
+    co*or:#d8d8d8;
+    line-height:1.45;
+*
+
+#inventory{
+    position:absolut*;
+    right:12px;
+    top:12px;
+  * width:310px;
+    max-width:calc(1*0vw - 24px);
+    padding:14px;
+   *border-radius:18px;
+    background*rgba(0,0,0,.48);
+    border:1px so*id rgba(255,255,255,.14);
+    back*rop-filter:blur(10px);
+    z-index*10;
+}
+
+#inventory h2{
+    margin:0*0 10px;
+    font-size:20px;
+}
+
+.it*m{
+    padding:12px;
+    border-ra*ius:14px;
+    background:rgba(255,*55,255,.09);
+    border:1px solid *gba(255,255,255,.12);
+    margin-b*ttom:10px;
+}
+
+.item b{
+    color:#*fd95a;
+}
+
+.item p{
+    color:#d9d0*7;
+    margin:6px 0 10px;
+    font*size:13px;
+}
+
+button{
+    border:n*ne;
+    border-radius:12px;
+    pa*ding:10px 13px;
+    color:white;
+ *  background:#5b35ff;
+    font-wei*ht:900;
+    cursor:pointer;
+}
+
+but*on:hover{
+    filter:brightness(1.*5);
+}
+
+button:disabled{
+    opacit*:.45;
+    cursor:not-allowed;
+}
+
+.*oldBtn{
+    background:linear-grad*ent(135deg,#ffd95a,#ff9d00);
+    c*lor:#211200;
+}
+
+#controls{
+    pos*tion:absolute;
+    left:12px;
+    *ottom:12px;
+    display:grid;
+    *rid-template-columns:70px 70px 70p*;
+    grid-template-rows:70px 70px*70px;
+    gap:7px;
+    z-index:20;*}
+
+.moveBtn{
+    width:70px;
+    h*ight:70px;
+    border-radius:18px;*    background:rgba(255,255,255,.1*);
+    border:1px solid rgba(255,2*5,255,.16);
+    font-size:24px;
+  * color:white;
+}
+
+#up{grid-column:2*grid-row:1;}
+#left{grid-column:1;g*id-row:2;}
+#down{grid-column:2;gri*-row:3;}
+#right{grid-column:3;grid*row:2;}
+
+#skills{
+    position:abs*lute;
+    right:12px;
+    bottom:1*px;
+    display:flex;
+    gap:12px*
+    z-index:20;
+}
+
+.skill{
+    wi*th:92px;
+    height:92px;
+    bord*r-radius:22px;
+    background:rgba*0,0,0,.55);
+    border:1px solid r*ba(255,255,255,.18);
+    color:whi*e;
+    font-size:13px;
+    display*flex;
+    flex-direction:column;
+ *  justify-content:center;
+    alig*-items:center;
+    font-weight:900*
+}
+
+.skill span{
+    font-size:28p*;
+    margin-bottom:4px;
+}
+
+#messa*e{
+    position:absolute;
+    left*50%;
+    top:78%;
+    transform:tr*nslate(-50%,-50%);
+    background:*gba(0,0,0,.7);
+    border:1px soli* rgba(255,255,255,.18);
+    border*radius:18px;
+    padding:14px 20px*
+    color:white;
+    font-weight:*00;
+    z-index:30;
+    opacity:0;*    transition:.25s;
+    pointer-e*ents:none;
+    text-align:center;
+*
+
+#message.show{
+    opacity:1;
+}
+*#hint{
+    position:absolute;
+    *eft:50%;
+    top:12px;
+    transfo*m:translateX(-50%);
+    padding:10*x 16px;
+    background:rgba(0,0,0,*45);
+    border:1px solid rgba(255*255,255,.14);
+    border-radius:99*px;
+    color:#e8e8e8;
+    z-index*15;
+    font-size:14px;
+}
+
+@media(*ax-width:850px){
+    #inventory{
+ *      top:auto;
+        bottom:222*x;
+        right:12px;
+        wid*h:260px;
+    }
+
+    #hud{
+        *idth:260px;
+    }
+
+    #skills{
+  *     right:10px;
+        bottom:10*x;
+    }
+
+    .skill{
+        widt*:82px;
+        height:82px;
+      * font-size:12px;
+    }
+
+    #contr*ls{
+        transform:scale(.82);
+*       transform-origin:left botto*;
+    }
+
+    #hint{
+        displa*:none;
+    }
+}
+</style>
+</head>
+
+<*ody>
+
+<div id="gameWrap">
+
+<canvas*id="game"></canvas>
+
+<div id="hint*>
+    PC: WASD bewegen • 1 = Kreis*Schlag • 2 = Himmelssturz
+</div>
+
+*div id="hud">
+    <h1>🐉 Dragon Ri*t PvE Test</h1>
+
+    <div>HP: <spa* id="hpText">100</span>/100</div>
+*   <div class="bar">
+        <div *d="hpFill" class="fill hp"></div>
+*   </div>
+
+    <div>XP: <span id="*pText">0</span>/<span id="xpNeed">*00</span> • Level <span id="levelT*xt">1</span></div>
+    <div class=*bar">
+        <div id="xpFill" cla*s="fill xp"></div>
+    </div>
+
+   *<div id="info">
+        Form: <b i*="formText">Nahkampfdrachen</b><br*
+        Gold: <b id="goldText">0<*b><br>
+        Monster aktiv: <b i*="monsterText">4</b>
+    </div>
+</*iv>
+
+<div id="inventory">
+    <h2>*� Inventar</h2>
+
+    <div class="i*em">
+        <b>🍬 Entwicklungsbon*on</b>
+        <p>
+            Rüs*e das Bonbon aus, um dich in einen*goldenen Drachen zu verwandeln.
+  *         Danach schaltest du zwei *pezialskills frei.
+        </p>
+  *     <button id="equipBtn" class="*oldBtn" onclick="equipCandy()">Aus*üsten</button>
+    </div>
+
+    <di* class="item">
+        <b>Test-Zie*</b>
+        <p>
+            Besie*e Monster. Sie laufen automatisch *u dir und greifen dich an.
+       *    Nach dem Tod respawnen Monster*nach 2 Minuten.
+        </p>
+    <*div>
+</div>
+
+<div id="controls">
+ *  <button class="moveBtn" id="up">*</button>
+    <button class="moveB*n" id="left">◀</button>
+    <butto* class="moveBtn" id="right">▶</but*on>
+    <button class="moveBtn" id*"down">▼</button>
+</div>
+
+<div id=*skills">
+    <button class="skill"*id="skill1" onclick="skillSpin()">*        <span>🌀</span>
+        Kr*is<br>Schlag
+    </button>
+
+    <b*tton class="skill" id="skill2" onc*ick="skillDive()">
+        <span>⚡*/span>
+        Himmels<br>sturz
+  * </button>
+</div>
+
+<div id="messag*"></div>
+
+</div>
+
+<script>
+const c*nvas = document.getElementById("ga*e");
+const ctx = canvas.getContext*"2d");
+
+let W = window.innerWidth;*let H = window.innerHeight;
+
+canva*.width = W;
+canvas.height = H;
+
+wi*dow.addEventListener("resize", res*ze);
+
+function resize(){
+    W = w*ndow.innerWidth;
+    H = window.in*erHeight;
+    canvas.width = W;
+  * canvas.height = H;
+}
+
+const keys * {};
+
+window.addEventListener("key*own", e=>{
+    keys[e.key.toLowerCase()] = true;
+
+    if(e.key === "1*) skillSpin();
+    if(e.key === "2*) skillDive();
+});
+
+window.addEven*Listener("keyup", e=>{
+    keys[e.key.toLowerCase()] = false;
+});
+
+fu*ction holdButton(id, key){
+    con*t btn = document.getElementById(id*;
+
+    btn.addEventListener("touch*tart", e=>{
+        e.preventDefau*t();
+        keys[key] = true;
+   *});
+
+    btn.addEventListener("tou*hend", e=>{
+        e.preventDefau*t();
+        keys[key] = false;
+  * });
+
+    btn.addEventListener("mo*sedown", e=>{
+        e.preventDef*ult();
+        keys[key] = true;
+ *  });
+
+    btn.addEventListener("m*useup", e=>{
+        e.preventDefa*lt();
+        keys[key] = false;
+ *  });
+
+    btn.addEventListener("m*useleave", e=>{
+        keys[key] * false;
+    });
+}
+
+holdButton("up"*"w");
+holdButton("left","a");
+hold*utton("down","s");
+holdButton("rig*t","d");
+
+const meter = 28;
+
+const*player = {
+    x: W/2,
+    y: H/2,*    r: 28,
+    hp: 100,
+    maxHp:*100,
+    xp: 0,
+    xpNeed: 100,
+ *  level: 1,
+    gold: 0,
+    speed* 3.2,
+    damage: 18,
+    golden: *alse,
+    facingX: 1,
+    facingY:*0,
+    invincibleTimer: 0,
+    att*ckTimer: 0
+};
+
+const monsterRespaw*Ms = 120000;
+
+let monsters = [];
+l*t effects = [];
+let damageTexts = *];
+
+const spawnPoints = [
+    {x:180,y:160},
+    {x:W-180,y:180},
+    {x:190,y:H-160},
+    {x:W-220,y:H-170}
+];
+
+function makeMonster(i){
+ *  const p = spawnPoints[i % spawnPoints.length];
+
+    return {
+      * id:i,
+        x:p.x,
+        y:p.*

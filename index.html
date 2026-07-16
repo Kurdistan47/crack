@@ -4,9 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Dragon Rift PvE Test</title>
+<title>Paper Empire Idle</title>
 
 <style>
+:root {
+    --bg1: #080b12;
+    --bg2: #101b2d;
+    --panel: rgba(255,255,255,0.08);
+    --panel2: rgba(255,255,255,0.13);
+    --border: rgba(255,255,255,0.15);
+    --text: #ffffff;
+    --muted: #b8c0d4;
+    --gold: #ffd85a;
+    --green: #42ff91;
+    --blue: #4aa3ff;
+    --purple: #b85cff;
+    --red: #ff4d4d;
+    --paper: #f4f0dd;
+}
+
 * {
     box-sizing: border-box;
     user-select: none;
@@ -16,348 +32,431 @@ html,
 body {
     margin: 0;
     padding: 0;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    background: #06100a;
+    min-height: 100%;
     font-family: Arial, Helvetica, sans-serif;
-    color: white;
-    touch-action: none;
+    background:
+        radial-gradient(circle at 20% 10%, rgba(255,216,90,0.18), transparent 25%),
+        radial-gradient(circle at 80% 18%, rgba(74,163,255,0.16), transparent 30%),
+        linear-gradient(135deg, var(--bg1), var(--bg2), #05070c);
+    color: var(--text);
+    overflow-x: hidden;
 }
 
-#game {
-    display: block;
-    width: 100vw;
-    height: 100vh;
-    background: #102918;
-}
-
-#topHud {
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    right: 12px;
-    z-index: 20;
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    pointer-events: none;
-}
-
-.hudBox {
-    background: rgba(0,0,0,0.55);
-    border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 16px;
-    padding: 10px 12px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-}
-
-#playerHud {
-    width: 280px;
-    max-width: calc(100vw - 24px);
-}
-
-#playerHud h1 {
-    margin: 0 0 8px;
-    font-size: 18px;
-}
-
-.labelLine {
-    font-size: 12px;
-    color: #d7d7d7;
-    margin-top: 6px;
-}
-
-.bar {
-    width: 100%;
-    height: 14px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 999px;
-    overflow: hidden;
-    margin-top: 4px;
-}
-
-.barFill {
-    height: 100%;
-    border-radius: 999px;
-    width: 100%;
-}
-
-.hpFill {
-    background: linear-gradient(90deg, #ff2d2d, #ff8c1a);
-}
-
-.xpFill {
-    background: linear-gradient(90deg, #23a7ff, #8b5cff);
-}
-
-#miniStats {
-    min-width: 175px;
-    font-size: 13px;
-    line-height: 1.55;
-}
-
-#miniStats b {
-    color: #ffd861;
-}
-
-#centerMsg {
-    position: fixed;
-    left: 50%;
-    top: 18%;
-    transform: translateX(-50%);
-    z-index: 50;
-    background: rgba(0,0,0,0.72);
-    border: 1px solid rgba(255,255,255,0.22);
-    border-radius: 999px;
-    padding: 12px 18px;
-    font-weight: 900;
-    opacity: 0;
-    transition: 0.25s;
-    pointer-events: none;
-    text-align: center;
-    max-width: 90vw;
-}
-
-#centerMsg.show {
-    opacity: 1;
-}
-
-#bottomControls {
-    position: fixed;
-    left: 14px;
-    bottom: 14px;
-    width: 214px;
-    height: 214px;
-    z-index: 30;
-}
-
-.moveBtn {
-    position: absolute;
-    width: 68px;
-    height: 68px;
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.22);
-    background: rgba(0,0,0,0.55);
-    color: white;
-    font-size: 26px;
-    font-weight: 900;
-    backdrop-filter: blur(8px);
-}
-
-.moveBtn:active {
-    background: rgba(255,255,255,0.2);
-}
-
-#btnUp {
-    left: 73px;
+header {
+    position: sticky;
     top: 0;
+    z-index: 50;
+    padding: 16px;
+    background: rgba(0,0,0,0.42);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
 }
 
-#btnLeft {
-    left: 0;
-    top: 73px;
+.header-inner {
+    max-width: 1250px;
+    margin: 0 auto;
 }
 
-#btnRight {
-    right: 0;
-    top: 73px;
+h1 {
+    margin: 0;
+    font-size: 28px;
+    letter-spacing: 1px;
 }
 
-#btnDown {
-    left: 73px;
-    bottom: 0;
+.subtitle {
+    color: var(--muted);
+    margin-top: 5px;
+    font-size: 14px;
 }
 
-#actionControls {
-    position: fixed;
-    right: 14px;
-    bottom: 14px;
-    display: flex;
+.stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
     gap: 10px;
-    z-index: 30;
-    align-items: flex-end;
+    margin-top: 14px;
 }
 
-.actionBtn {
-    width: 86px;
-    height: 86px;
-    border-radius: 22px;
-    border: 1px solid rgba(255,255,255,0.22);
-    background: rgba(0,0,0,0.6);
-    color: white;
-    font-weight: 900;
-    font-size: 12px;
-    backdrop-filter: blur(8px);
+.stat {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 10px;
+    text-align: center;
+}
+
+.stat b {
+    display: block;
+    color: var(--gold);
+    font-size: 20px;
+}
+
+main {
+    max-width: 1250px;
+    margin: 0 auto;
+    padding: 18px;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 18px;
+}
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 26px;
+    padding: 18px;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+}
+
+.click-zone {
+    min-height: 600px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.big-paper-wrap {
+    position: relative;
+    margin: 28px auto 14px;
+    width: 260px;
+    height: 330px;
+    perspective: 800px;
+}
+
+.big-paper {
+    width: 100%;
+    height: 100%;
+    border-radius: 18px;
+    background:
+        linear-gradient(135deg, rgba(255,255,255,0.85), rgba(244,240,221,1)),
+        repeating-linear-gradient(to bottom, transparent 0, transparent 26px, rgba(0,0,0,0.08) 27px);
+    border: 3px solid rgba(255,255,255,0.75);
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.45),
+        inset 0 0 35px rgba(255,255,255,0.7);
+    cursor: pointer;
+    transition: transform 0.08s;
     position: relative;
     overflow: hidden;
 }
 
-.actionBtn span {
-    display: block;
-    font-size: 26px;
-    margin-bottom: 3px;
+.big-paper:active {
+    transform: scale(0.96) rotateX(4deg);
 }
 
-.actionBtn:active {
-    transform: scale(0.96);
+.big-paper::before {
+    content: "";
+    position: absolute;
+    top: 35px;
+    left: 28px;
+    right: 28px;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.11);
+    box-shadow:
+        0 38px rgba(0,0,0,0.09),
+        0 76px rgba(0,0,0,0.09),
+        0 114px rgba(0,0,0,0.09),
+        0 152px rgba(0,0,0,0.09),
+        0 190px rgba(0,0,0,0.09);
 }
 
-#attackBtn {
-    background: linear-gradient(135deg, rgba(120,30,30,0.9), rgba(40,0,0,0.85));
-}
-
-#skill1Btn {
-    background: linear-gradient(135deg, rgba(210,150,25,0.92), rgba(130,70,0,0.88));
-}
-
-#skill2Btn {
-    background: linear-gradient(135deg, rgba(255,215,60,0.92), rgba(120,90,0,0.88));
-}
-
-.cooldownOverlay {
+.big-paper::after {
+    content: "📄";
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.65);
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
-    font-weight: 900;
+    font-size: 86px;
+    filter: drop-shadow(0 8px 10px rgba(0,0,0,0.25));
 }
 
-.actionBtn.locked {
-    filter: grayscale(1);
-    opacity: 0.55;
-}
-
-.actionBtn.locked .cooldownOverlay {
-    display: flex;
-    font-size: 11px;
-    padding: 8px;
-}
-
-#inventoryBtn {
-    position: fixed;
-    right: 14px;
-    top: 122px;
-    z-index: 35;
-    width: 58px;
-    height: 58px;
-    border-radius: 18px;
-    border: 1px solid rgba(255,255,255,0.24);
-    background: rgba(0,0,0,0.62);
-    color: white;
-    font-size: 26px;
-    backdrop-filter: blur(8px);
-}
-
-#inventoryPanel {
-    position: fixed;
-    right: 14px;
-    top: 190px;
-    width: 330px;
-    max-width: calc(100vw - 28px);
-    max-height: calc(100vh - 250px);
-    overflow: auto;
-    background: rgba(0,0,0,0.78);
-    border: 1px solid rgba(255,255,255,0.22);
-    border-radius: 22px;
-    z-index: 60;
-    padding: 16px;
-    display: none;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 25px 70px rgba(0,0,0,0.55);
-}
-
-#inventoryPanel.show {
-    display: block;
-}
-
-#inventoryPanel h2 {
-    margin: 0 0 12px;
-    font-size: 22px;
-}
-
-.invItem {
-    padding: 14px;
-    background: rgba(255,255,255,0.09);
-    border: 1px solid rgba(255,255,255,0.14);
-    border-radius: 18px;
-    margin-bottom: 12px;
-}
-
-.invItem b {
-    color: #ffd861;
-}
-
-.invItem p {
-    margin: 8px 0 12px;
-    color: #d6d0c8;
-    font-size: 13px;
-    line-height: 1.45;
-}
-
-.invButton {
-    width: 100%;
-    padding: 12px;
-    border-radius: 14px;
-    border: none;
-    font-weight: 900;
-    background: linear-gradient(135deg, #ffd861, #ff9d00);
-    color: #211200;
-}
-
-.invButton:disabled {
-    opacity: 0.55;
-}
-
-#helpBox {
-    position: fixed;
-    left: 50%;
-    bottom: 14px;
-    transform: translateX(-50%);
-    z-index: 10;
-    background: rgba(0,0,0,0.35);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 999px;
-    padding: 8px 14px;
-    color: rgba(255,255,255,0.78);
-    font-size: 12px;
+.paper-glow {
+    position: absolute;
+    inset: -35px;
+    border-radius: 40px;
+    background: radial-gradient(circle, rgba(255,216,90,0.35), transparent 60%);
+    animation: pulseGlow 2.4s ease-in-out infinite;
     pointer-events: none;
 }
 
-@media (max-width: 800px) {
-    #miniStats {
-        display: none;
+@keyframes pulseGlow {
+    0%, 100% { opacity: 0.45; transform: scale(0.95); }
+    50% { opacity: 0.85; transform: scale(1.08); }
+}
+
+.click-title {
+    font-size: 24px;
+    font-weight: 1000;
+    margin-top: 10px;
+}
+
+.click-sub {
+    color: var(--muted);
+    margin-top: 6px;
+}
+
+.progress-wrap {
+    margin-top: 22px;
+}
+
+.level-bar {
+    width: 100%;
+    height: 18px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.13);
+    overflow: hidden;
+}
+
+.level-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--blue), var(--purple));
+}
+
+.actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 18px;
+}
+
+button {
+    border: none;
+    border-radius: 15px;
+    padding: 13px 14px;
+    color: white;
+    background: #5335ff;
+    font-weight: 900;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+button:hover {
+    filter: brightness(1.12);
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+    filter: grayscale(1);
+}
+
+.gold-btn {
+    background: linear-gradient(135deg, #ffd85a, #ff9f1a);
+    color: #211300;
+}
+
+.green-btn {
+    background: linear-gradient(135deg, #25d977, #087d42);
+}
+
+.red-btn {
+    background: linear-gradient(135deg, #ff4d4d, #9f1414);
+}
+
+.blue-btn {
+    background: linear-gradient(135deg, #2aa7ff, #1738c9);
+}
+
+.purple-btn {
+    background: linear-gradient(135deg, #b85cff, #5518b8);
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.tab {
+    padding: 10px 13px;
+    border-radius: 999px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-weight: 900;
+}
+
+.tab.active {
+    background: var(--gold);
+    color: #211300;
+}
+
+.shop-list {
+    max-height: 650px;
+    overflow: auto;
+    padding-right: 5px;
+}
+
+.shop-card,
+.achievement,
+.mission,
+.log-line {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 18px;
+    padding: 14px;
+    margin-bottom: 12px;
+}
+
+.shop-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.shop-title {
+    font-weight: 1000;
+    font-size: 16px;
+}
+
+.shop-desc {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 7px 0 12px;
+}
+
+.shop-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 10px;
+}
+
+.pill {
+    background: rgba(255,255,255,0.11);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 5px 8px;
+    border-radius: 999px;
+}
+
+.achievement.done {
+    border-color: rgba(255,216,90,0.45);
+    background: rgba(255,216,90,0.12);
+}
+
+.mission.done {
+    border-color: rgba(66,255,145,0.45);
+    background: rgba(66,255,145,0.12);
+}
+
+.float-text {
+    position: fixed;
+    pointer-events: none;
+    z-index: 999;
+    font-weight: 1000;
+    animation: floatUp 900ms ease-out forwards;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+@keyframes floatUp {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-75px) scale(1.25);
+    }
+}
+
+.particle {
+    position: fixed;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--gold);
+    pointer-events: none;
+    z-index: 998;
+    animation: particleFly 700ms ease-out forwards;
+}
+
+@keyframes particleFly {
+    from {
+        opacity: 1;
+        transform: translate(0,0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translate(var(--dx), var(--dy)) scale(0.2);
+    }
+}
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%) translateY(120px);
+    background: rgba(0,0,0,0.86);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: white;
+    padding: 14px 18px;
+    border-radius: 18px;
+    z-index: 2000;
+    transition: 0.3s;
+    font-weight: 900;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+    max-width: 92vw;
+    text-align: center;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.prestige-box {
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255,216,90,0.20), transparent 35%),
+        rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,216,90,0.4);
+    border-radius: 22px;
+    padding: 16px;
+}
+
+.big-number {
+    font-size: 34px;
+    font-weight: 1000;
+    color: var(--gold);
+}
+
+.danger-zone {
+    margin-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.14);
+    padding-top: 14px;
+}
+
+@media (max-width: 900px) {
+    .layout {
+        grid-template-columns: 1fr;
     }
 
-    #playerHud {
-        width: 250px;
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    #playerHud h1 {
-        font-size: 16px;
+    .actions {
+        grid-template-columns: 1fr;
     }
 
-    #bottomControls {
-        transform: scale(0.82);
-        transform-origin: left bottom;
+    .big-paper-wrap {
+        width: 210px;
+        height: 270px;
     }
 
-    .actionBtn {
-        width: 76px;
-        height: 76px;
-        font-size: 11px;
-    }
-
-    .actionBtn span {
-        font-size: 23px;
-    }
-
-    #helpBox {
-        display: none;
+    h1 {
+        font-size: 24px;
     }
 }
 </style>
@@ -365,1188 +464,730 @@ body {
 
 <body>
 
-<canvas id="game"></canvas>
-
-<div id="topHud">
-    <div id="playerHud" class="hudBox">
-        <h1>🐉 Dragon Rift PvE Test</h1>
-
-        <div class="labelLine">
-            HP <span id="hpText">100</span>/<span id="maxHpText">100</span>
-        </div>
-        <div class="bar">
-            <div id="hpBar" class="barFill hpFill"></div>
+<header>
+    <div class="header-inner">
+        <h1>📄 Paper Empire Idle</h1>
+        <div class="subtitle">
+            Klick Papier, baue Drucker, stelle Praktikanten ein, gründe Fabriken und werde Papier-Imperator.
         </div>
 
-        <div class="labelLine">
-            XP <span id="xpText">0</span>/<span id="xpNeedText">100</span> • Level <span id="levelText">1</span>
+        <div class="stats">
+            <div class="stat">
+                <b id="paperText">0</b>
+                Papier
+            </div>
+            <div class="stat">
+                <b id="ppsText">0</b>
+                Papier/s
+            </div>
+            <div class="stat">
+                <b id="clickText">1</b>
+                Pro Klick
+            </div>
+            <div class="stat">
+                <b id="levelText">1</b>
+                Level
+            </div>
+            <div class="stat">
+                <b id="prestigeText">0</b>
+                Ruhm
+            </div>
         </div>
-        <div class="bar">
-            <div id="xpBar" class="barFill xpFill"></div>
-        </div>
     </div>
+</header>
 
-    <div id="miniStats" class="hudBox">
-        Form: <b id="formText">Nahkampfdrache</b><br>
-        Gold: <b id="goldText">0</b><br>
-        Monster: <b id="monsterCountText">4</b>/4<br>
-        Respawn: <b>12s</b>
+<main>
+    <div class="layout">
+
+        <section class="panel click-zone">
+            <div class="paper-glow"></div>
+
+            <div class="big-paper-wrap">
+                <div id="bigPaper" class="big-paper" onclick="clickPaper(event)"></div>
+            </div>
+
+            <div class="click-title">Das heilige Papier</div>
+            <div class="click-sub">
+                Klick es. Druck es. Verkaufe es. Automatisiere alles.
+            </div>
+
+            <div class="progress-wrap">
+                <div style="display:flex;justify-content:space-between;font-size:13px;color:#b8c0d4;margin-bottom:6px;">
+                    <span>Level-Fortschritt</span>
+                    <span id="xpText">0 / 100 XP</span>
+                </div>
+                <div class="level-bar">
+                    <div id="xpFill" class="level-fill"></div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="gold-btn" onclick="clickPaperByButton()">📄 Papier machen</button>
+                <button class="blue-btn" onclick="activateFrenzy()">⚡ Papier-Fieber</button>
+                <button class="purple-btn" onclick="collectMissionReward()">🎯 Mission holen</button>
+            </div>
+
+            <div style="margin-top:18px;color:#b8c0d4;font-size:13px;line-height:1.5;">
+                Tipp: Kauf erst Klick-Kraft, dann Auto-Drucker, dann Praktikanten. Prestige lohnt sich später.
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('shop')">Shop</div>
+                <div class="tab" onclick="showTab('missions')">Missionen</div>
+                <div class="tab" onclick="showTab('achievements')">Erfolge</div>
+                <div class="tab" onclick="showTab('prestige')">Prestige</div>
+                <div class="tab" onclick="showTab('log')">Log</div>
+            </div>
+
+            <div id="shopTab">
+                <h2>🛒 Upgrades</h2>
+                <div id="shopList" class="shop-list"></div>
+            </div>
+
+            <div id="missionsTab" style="display:none;">
+                <h2>🎯 Missionen</h2>
+                <div id="missionsList"></div>
+            </div>
+
+            <div id="achievementsTab" style="display:none;">
+                <h2>🏆 Erfolge</h2>
+                <div id="achievementsList"></div>
+            </div>
+
+            <div id="prestigeTab" style="display:none;">
+                <h2>👑 Prestige</h2>
+
+                <div class="prestige-box">
+                    <div>Wenn du genug Papier gesammelt hast, kannst du dein Imperium zurücksetzen und Ruhm bekommen.</div>
+                    <br>
+                    <div>Aktueller Prestige-Bonus:</div>
+                    <div class="big-number" id="prestigeBonusText">0%</div>
+                    <br>
+                    <div>Möglicher Ruhm beim Prestige:</div>
+                    <div class="big-number" id="possiblePrestigeText">0</div>
+                    <br>
+                    <button class="gold-btn" onclick="prestige()">Prestige durchführen</button>
+                </div>
+
+                <div class="danger-zone">
+                    <button class="red-btn" onclick="hardReset()">Spielstand löschen</button>
+                </div>
+            </div>
+
+            <div id="logTab" style="display:none;">
+                <h2>📜 Ereignisse</h2>
+                <div id="logList"></div>
+            </div>
+        </section>
+
     </div>
-</div>
+</main>
 
-<button id="inventoryBtn" onclick="toggleInventory()">🎒</button>
-
-<div id="inventoryPanel">
-    <h2>🎒 Inventar</h2>
-
-    <div class="invItem">
-        <b>🍬 Entwicklungsbonbon</b>
-        <p>
-            Rüste dieses Bonbon aus. Dein Nahkampfdrache verwandelt sich in einen goldenen Drachen.
-            Dadurch werden zwei Spezialskills freigeschaltet.
-        </p>
-        <button id="equipCandyBtn" class="invButton" onclick="equipCandy()">Entwicklungsbonbon ausrüsten</button>
-    </div>
-
-    <div class="invItem">
-        <b>📜 Test-Auftrag</b>
-        <p>
-            Vier Monster laufen automatisch zu dir und greifen dich an. Sie machen nur 1 Schaden.
-            Besiege Monster, teste Skills und die Verwandlung.
-        </p>
-    </div>
-</div>
-
-<div id="bottomControls">
-    <button id="btnUp" class="moveBtn">▲</button>
-    <button id="btnLeft" class="moveBtn">◀</button>
-    <button id="btnRight" class="moveBtn">▶</button>
-    <button id="btnDown" class="moveBtn">▼</button>
-</div>
-
-<div id="actionControls">
-    <button id="attackBtn" class="actionBtn" onclick="basicAttack()">
-        <span>🗡️</span>
-        Angriff
-        <div id="attackCd" class="cooldownOverlay"></div>
-    </button>
-
-    <button id="skill1Btn" class="actionBtn locked" onclick="skillCircle()">
-        <span>🌀</span>
-        Kreis<br>Schlag
-        <div id="skill1Cd" class="cooldownOverlay">Bonbon nötig</div>
-    </button>
-
-    <button id="skill2Btn" class="actionBtn locked" onclick="skillDive()">
-        <span>⚡</span>
-        Himmels<br>Sturz
-        <div id="skill2Cd" class="cooldownOverlay">Bonbon nötig</div>
-    </button>
-</div>
-
-<div id="centerMsg"></div>
-
-<div id="helpBox">
-    PC: WASD bewegen • Leertaste Angriff • 1 Kreis-Schlag • 2 Himmelssturz • I Inventar
-</div>
+<div id="toast" class="toast"></div>
 
 <script>
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const SAVE_KEY = "paperEmpireIdleSaveV1";
 
-let width = window.innerWidth;
-let height = window.innerHeight;
-
-canvas.width = width;
-canvas.height = height;
-
-window.addEventListener("resize", () => {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-});
-
-const keys = {};
-
-window.addEventListener("keydown", (event) => {
-    const key = event.key.toLowerCase();
-
-    keys[key] = true;
-
-    if (key === " ") {
-        event.preventDefault();
-        basicAttack();
-    }
-
-    if (key === "1") {
-        skillCircle();
-    }
-
-    if (key === "2") {
-        skillDive();
-    }
-
-    if (key === "i") {
-        toggleInventory();
-    }
-});
-
-window.addEventListener("keyup", (event) => {
-    keys[event.key.toLowerCase()] = false;
-});
-
-function bindHoldButton(id, key) {
-    const button = document.getElementById(id);
-
-    const down = (event) => {
-        event.preventDefault();
-        keys[key] = true;
-    };
-
-    const up = (event) => {
-        event.preventDefault();
-        keys[key] = false;
-    };
-
-    button.addEventListener("mousedown", down);
-    button.addEventListener("mouseup", up);
-    button.addEventListener("mouseleave", up);
-    button.addEventListener("touchstart", down, { passive: false });
-    button.addEventListener("touchend", up, { passive: false });
-    button.addEventListener("touchcancel", up, { passive: false });
-}
-
-bindHoldButton("btnUp", "w");
-bindHoldButton("btnLeft", "a");
-bindHoldButton("btnDown", "s");
-bindHoldButton("btnRight", "d");
-
-const world = {
-    tile: 80,
-    time: 0
-};
-
-const meter = 28;
-
-const player = {
-    x: width / 2,
-    y: height / 2,
-    radius: 30,
-    hp: 100,
-    maxHp: 100,
+let state = {
+    paper: 0,
+    totalPaper: 0,
+    lifetimePaper: 0,
+    clickPower: 1,
+    level: 1,
     xp: 0,
     xpNeed: 100,
-    level: 1,
-    gold: 0,
-    speed: 3.4,
-    baseDamage: 22,
-    golden: false,
-    facingX: 1,
-    facingY: 0,
-    attackCooldown: 0,
-    circleCooldown: 0,
-    diveCooldown: 0,
-    wingFrame: 0
+    prestigePoints: 0,
+    frenzyUntil: 0,
+    lastSave: Date.now(),
+    stats: {
+        clicks: 0,
+        upgradesBought: 0,
+        missionsCompleted: 0,
+        achievementsUnlocked: 0
+    },
+    upgrades: {},
+    achievements: {},
+    missions: {}
 };
 
-const monsterRespawnTime = 12;
+const upgrades = [
+    {
+        id: "click1",
+        name: "Stärkerer Finger",
+        icon: "👆",
+        desc: "Mehr Papier pro Klick. Simpel, aber krank wichtig.",
+        baseCost: 25,
+        scale: 1.18,
+        type: "click",
+        amount: 1
+    },
+    {
+        id: "click2",
+        name: "Goldener Kugelschreiber",
+        icon: "🖊️",
+        desc: "Deine Klicks werden deutlich stärker.",
+        baseCost: 220,
+        scale: 1.22,
+        type: "click",
+        amount: 8
+    },
+    {
+        id: "printer",
+        name: "Billig-Drucker",
+        icon: "🖨️",
+        desc: "Produziert automatisch Papier pro Sekunde.",
+        baseCost: 60,
+        scale: 1.16,
+        type: "pps",
+        amount: 1
+    },
+    {
+        id: "intern",
+        name: "Praktikant",
+        icon: "🧑‍💼",
+        desc: "Sortiert Papier für dich. Arbeitet langsam, aber gratis motiviert.",
+        baseCost: 350,
+        scale: 1.18,
+        type: "pps",
+        amount: 6
+    },
+    {
+        id: "office",
+        name: "Mini-Büro",
+        icon: "🏢",
+        desc: "Ein kleines Büro mit mehreren Druckern.",
+        baseCost: 2200,
+        scale: 1.20,
+        type: "pps",
+        amount: 32
+    },
+    {
+        id: "factory",
+        name: "Papierfabrik",
+        icon: "🏭",
+        desc: "Jetzt wird es ernst. Massendruck ohne Scham.",
+        baseCost: 15000,
+        scale: 1.21,
+        type: "pps",
+        amount: 210
+    },
+    {
+        id: "ai",
+        name: "KI-Papier-Assistent",
+        icon: "🤖",
+        desc: "Optimiert Papierwege, Klicks und Auto-Farm.",
+        baseCost: 85000,
+        scale: 1.23,
+        type: "pps",
+        amount: 1250
+    },
+    {
+        id: "empire",
+        name: "Papier-Imperium",
+        icon: "👑",
+        desc: "Du besitzt die halbe Papierwelt.",
+        baseCost: 650000,
+        scale: 1.25,
+        type: "pps",
+        amount: 9500
+    }
+];
 
-const monsters = [];
-const effects = [];
-const floatingTexts = [];
-const particles = [];
+const achievements = [
+    { id: "firstClick", name: "Erster Klick", desc: "Mache dein erstes Papier.", check: () => state.stats.clicks >= 1, reward: 20 },
+    { id: "hundredPaper", name: "Papier-Noob", desc: "Erreiche 100 Papier insgesamt.", check: () => state.totalPaper >= 100, reward: 50 },
+    { id: "thousandPaper", name: "Copyshop-Legende", desc: "Erreiche 1.000 Papier insgesamt.", check: () => state.totalPaper >= 1000, reward: 150 },
+    { id: "tenKPaper", name: "Druckmaschinen-Modus", desc: "Erreiche 10.000 Papier insgesamt.", check: () => state.totalPaper >= 10000, reward: 500 },
+    { id: "printerOwner", name: "Erster Drucker", desc: "Kaufe einen Drucker.", check: () => getUpgradeLevel("printer") >= 1, reward: 120 },
+    { id: "factoryOwner", name: "Fabrikboss", desc: "Kaufe eine Papierfabrik.", check: () => getUpgradeLevel("factory") >= 1, reward: 1200 },
+    { id: "level10", name: "Level 10", desc: "Erreiche Level 10.", check: () => state.level >= 10, reward: 1000 },
+    { id: "prestige1", name: "Neuanfang", desc: "Mache dein erstes Prestige.", check: () => state.prestigePoints >= 1, reward: 0 }
+];
 
-function getSpawnPoints() {
-    return [
-        { x: 160, y: 180 },
-        { x: width - 160, y: 180 },
-        { x: 160, y: height - 160 },
-        { x: width - 170, y: height - 170 }
-    ];
+const missions = [
+    { id: "m1", name: "Mach 100 Papier", desc: "Sammle 100 Papier.", check: () => state.paper >= 100, reward: 75 },
+    { id: "m2", name: "Kauf 3 Upgrades", desc: "Kaufe insgesamt 3 Upgrades.", check: () => state.stats.upgradesBought >= 3, reward: 200 },
+    { id: "m3", name: "Erreiche 20 Papier/s", desc: "Baue deine Auto-Produktion aus.", check: () => getPPS() >= 20, reward: 600 },
+    { id: "m4", name: "Klick 50 Mal", desc: "Zeig dem Papier, wer Chef ist.", check: () => state.stats.clicks >= 50, reward: 300 },
+    { id: "m5", name: "Erreiche Level 5", desc: "Sammle XP durch Produktion.", check: () => state.level >= 5, reward: 900 }
+];
+
+let logs = [];
+
+function loadGame() {
+    const raw = localStorage.getItem(SAVE_KEY);
+
+    if (!raw) {
+        log("Neues Imperium gestartet.");
+        return;
+    }
+
+    try {
+        const loaded = JSON.parse(raw);
+        state = mergeState(state, loaded);
+
+        const now = Date.now();
+        const awaySeconds = Math.min(21600, Math.max(0, (now - state.lastSave) / 1000));
+        const offlineGain = getPPS() * awaySeconds * 0.35;
+
+        if (offlineGain > 0) {
+            addPaper(offlineGain, false);
+            toast("Offline verdient: " + format(offlineGain) + " Papier.");
+            log("Offline-Fortschritt: +" + format(offlineGain) + " Papier.");
+        }
+
+        state.lastSave = now;
+    } catch (e) {
+        log("Speicherstand konnte nicht geladen werden.");
+    }
 }
 
-function createMonster(index) {
-    const spawns = getSpawnPoints();
-    const spawn = spawns[index % spawns.length];
-
+function mergeState(base, loaded) {
     return {
-        id: index,
-        x: spawn.x,
-        y: spawn.y,
-        spawnX: spawn.x,
-        spawnY: spawn.y,
-        radius: 24,
-        hp: 90,
-        maxHp: 90,
-        speed: 1.18,
-        damage: 1,
-        alive: true,
-        deadAt: 0,
-        attackCooldown: 0,
-        wobble: Math.random() * Math.PI * 2,
-        name: "Rift-Kriecher"
+        ...base,
+        ...loaded,
+        stats: { ...base.stats, ...(loaded.stats || {}) },
+        upgrades: { ...base.upgrades, ...(loaded.upgrades || {}) },
+        achievements: { ...base.achievements, ...(loaded.achievements || {}) },
+        missions: { ...base.missions, ...(loaded.missions || {}) }
     };
 }
 
-function initializeMonsters() {
-    monsters.length = 0;
-
-    for (let i = 0; i < 400; i++) {
-        monsters.push(createMonster(i));
-    }
+function saveGame() {
+    state.lastSave = Date.now();
+    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
 }
 
-initializeMonsters();
+function format(num) {
+    num = Math.floor(num);
 
-function toggleInventory() {
-    document.getElementById("inventoryPanel").classList.toggle("show");
+    if (num < 1000) return String(num);
+    if (num < 1000000) return (num / 1000).toFixed(1) + "K";
+    if (num < 1000000000) return (num / 1000000).toFixed(1) + "M";
+    if (num < 1000000000000) return (num / 1000000000).toFixed(1) + "B";
+
+    return (num / 1000000000000).toFixed(1) + "T";
 }
 
-function equipCandy() {
-    if (player.golden) {
-        showMessage("Das Entwicklungsbonbon ist bereits ausgerüstet.");
-        return;
-    }
-
-    player.golden = true;
-    player.maxHp = 150;
-    player.hp = 150;
-    player.speed = 3.9;
-    player.baseDamage = 34;
-
-    const equipButton = document.getElementById("equipCandyBtn");
-    equipButton.textContent = "Ausgerüstet";
-    equipButton.disabled = true;
-
-    createBurst(player.x, player.y, "#ffd861", 42);
-    showMessage("🍬 Entwicklungsbonbon aktiviert! Du bist jetzt ein goldener Drache.");
+function getPrestigeMultiplier() {
+    return 1 + state.prestigePoints * 0.08;
 }
 
-function basicAttack() {
-    if (player.attackCooldown > 0) {
-        return;
-    }
+function getFrenzyMultiplier() {
+    return Date.now() < state.frenzyUntil ? 5 : 1;
+}
 
-    player.attackCooldown = 1;
+function getClickPower() {
+    return state.clickPower * getPrestigeMultiplier() * getFrenzyMultiplier();
+}
 
-    const radius = 10 * meter;
-    let hits = 0;
+function getPPS() {
+    let total = 0;
 
-    monsters.forEach((monster) => {
-        if (!monster.alive) {
-            return;
-        }
-
-        const d = distance(player.x, player.y, monster.x, monster.y);
-
-        if (d <= radius) {
-            damageMonster(monster, 1000);
-            hits++;
+    upgrades.forEach(upgrade => {
+        if (upgrade.type === "pps") {
+            total += getUpgradeLevel(upgrade.id) * upgrade.amount;
         }
     });
 
-    effects.push({
-        type: "circle",
-        x: player.x,
-        y: player.y,
-        radius: radius,
-        life: 420,
-        maxLife: 420,
-        color: player.golden ? "#ffd861" : "#ff5d45"
+    total *= getPrestigeMultiplier();
+    total *= getFrenzyMultiplier();
+
+    return total;
+}
+
+function getUpgradeLevel(id) {
+    return state.upgrades[id] || 0;
+}
+
+function getUpgradeCost(upgrade) {
+    const level = getUpgradeLevel(upgrade.id);
+    return Math.floor(upgrade.baseCost * Math.pow(upgrade.scale, level));
+}
+
+function clickPaper(event) {
+    const amount = getClickPower();
+
+    addPaper(amount, true);
+    state.stats.clicks++;
+    gainXP(1);
+
+    if (event) {
+        spawnFloat(event.clientX, event.clientY, "+" + format(amount), "#ffd85a");
+        spawnParticles(event.clientX, event.clientY, 12);
+    }
+
+    checkAchievements();
+    updateUI();
+}
+
+function clickPaperByButton() {
+    const rect = document.getElementById("bigPaper").getBoundingClientRect();
+
+    clickPaper({
+        clientX: rect.left + rect.width / 2,
+        clientY: rect.top + rect.height / 2
+    });
+}
+
+function addPaper(amount, countLifetime) {
+    amount = Math.max(0, amount);
+
+    state.paper += amount;
+    state.totalPaper += amount;
+
+    if (countLifetime) {
+        state.lifetimePaper += amount;
+    }
+}
+
+function gainXP(amount) {
+    state.xp += amount;
+
+    while (state.xp >= state.xpNeed) {
+        state.xp -= state.xpNeed;
+        state.level++;
+        state.xpNeed = Math.floor(state.xpNeed * 1.32);
+        state.paper += state.level * 20;
+
+        toast("Level Up! Du bist jetzt Level " + state.level + ".");
+        log("Level " + state.level + " erreicht.");
+    }
+}
+
+function buyUpgrade(id) {
+    const upgrade = upgrades.find(u => u.id === id);
+    if (!upgrade) return;
+
+    const cost = getUpgradeCost(upgrade);
+
+    if (state.paper < cost) {
+        toast("Nicht genug Papier.");
+        return;
+    }
+
+    state.paper -= cost;
+    state.upgrades[id] = getUpgradeLevel(id) + 1;
+    state.stats.upgradesBought++;
+
+    if (upgrade.type === "click") {
+        state.clickPower += upgrade.amount;
+    }
+
+    gainXP(5 + getUpgradeLevel(id));
+    createShopFlash();
+
+    toast(upgrade.name + " gekauft.");
+    log("Upgrade gekauft: " + upgrade.name + " Level " + getUpgradeLevel(id));
+
+    checkAchievements();
+    updateUI();
+    saveGame();
+}
+
+function activateFrenzy() {
+    const cost = 500 + state.level * 90;
+
+    if (state.paper < cost) {
+        toast("Papier-Fieber kostet " + format(cost) + " Papier.");
+        return;
+    }
+
+    state.paper -= cost;
+    state.frenzyUntil = Date.now() + 30000;
+
+    toast("⚡ Papier-Fieber aktiv: 30 Sekunden x5 Produktion.");
+    log("Papier-Fieber aktiviert.");
+
+    updateUI();
+    saveGame();
+}
+
+function collectMissionReward() {
+    let claimed = 0;
+
+    missions.forEach(mission => {
+        if (!state.missions[mission.id] && mission.check()) {
+            state.missions[mission.id] = true;
+            state.paper += mission.reward;
+            state.stats.missionsCompleted++;
+            claimed++;
+            log("Mission abgeschlossen: " + mission.name);
+        }
     });
 
-    createBurst(player.x, player.y, player.golden ? "#ffd861" : "#ff5d45", 28);
-
-    if (hits > 0) {
-        showMessage("Normaler Angriff trifft " + hits + " Monster für 1000 Schaden.");
+    if (claimed === 0) {
+        toast("Keine Mission bereit.");
     } else {
-        showSmallText(player.x, player.y - 45, "Kein Ziel im Radius", "#d8d8d8");
+        toast(claimed + " Mission(en) abgeschlossen.");
     }
+
+    updateUI();
+    saveGame();
 }
 
-    player.attackCooldown = 650;
+function checkAchievements() {
+    achievements.forEach(achievement => {
+        if (!state.achievements[achievement.id] && achievement.check()) {
+            state.achievements[achievement.id] = true;
+            state.paper += achievement.reward || 0;
+            state.stats.achievementsUnlocked++;
 
-    const range = 78;
-    const target = findClosestMonster(range);
-
-    effects.push({
-        type: "slash",
-        x: player.x,
-        y: player.y,
-        angle: Math.atan2(player.facingY, player.facingX),
-        life: 220,
-        maxLife: 220,
-        color: player.golden ? "#ffd861" : "#ff5d45"
+            toast("🏆 Erfolg: " + achievement.name);
+            log("Erfolg freigeschaltet: " + achievement.name);
+        }
     });
-
-    if (target) {
-        damageMonster(target, player.baseDamage);
-    } else {
-        showSmallText(player.x, player.y - 45, "Miss", "#d8d8d8");
-    }
 }
 
-function skillCircle() {
-    if (!player.golden) {
-        showMessage("Du brauchst zuerst das Entwicklungsbonbon.");
+function getPossiblePrestige() {
+    if (state.totalPaper < 100000) {
+        return 0;
+    }
+
+    return Math.floor(Math.sqrt(state.totalPaper / 100000));
+}
+
+function prestige() {
+    const gain = getPossiblePrestige();
+
+    if (gain <= 0) {
+        toast("Du brauchst mindestens 100K gesamtes Papier für Prestige.");
         return;
     }
 
-    if (player.circleCooldown > 0) {
+    const ok = confirm("Prestige durchführen? Dein Papier und Upgrades werden zurückgesetzt, aber du bekommst +" + gain + " Ruhm.");
+
+    if (!ok) return;
+
+    state.paper = 0;
+    state.totalPaper = 0;
+    state.clickPower = 1;
+    state.level = 1;
+    state.xp = 0;
+    state.xpNeed = 100;
+    state.upgrades = {};
+    state.missions = {};
+    state.prestigePoints += gain;
+
+    toast("Prestige erfolgreich. +" + gain + " Ruhm.");
+    log("Prestige durchgeführt. +" + gain + " Ruhm.");
+
+    checkAchievements();
+    updateUI();
+    saveGame();
+}
+
+function hardReset() {
+    const ok = confirm("Wirklich alles löschen?");
+
+    if (!ok) return;
+
+    localStorage.removeItem(SAVE_KEY);
+    location.reload();
+}
+
+function showTab(tab) {
+    const tabs = ["shop", "missions", "achievements", "prestige", "log"];
+
+    tabs.forEach(t => {
+        document.getElementById(t + "Tab").style.display = t === tab ? "block" : "none";
+    });
+
+    document.querySelectorAll(".tab").forEach(el => el.classList.remove("active"));
+
+    const index = tabs.indexOf(tab);
+    document.querySelectorAll(".tab")[index].classList.add("active");
+
+    updateUI();
+}
+
+function renderShop() {
+    const box = document.getElementById("shopList");
+
+    box.innerHTML = upgrades.map(upgrade => {
+        const level = getUpgradeLevel(upgrade.id);
+        const cost = getUpgradeCost(upgrade);
+        const canBuy = state.paper >= cost;
+
+        const effectText = upgrade.type === "click"
+            ? "+" + upgrade.amount + " pro Klick"
+            : "+" + upgrade.amount + " Papier/s";
+
+        return `
+            <div class="shop-card">
+                <div class="shop-top">
+                    <div class="shop-title">${upgrade.icon} ${upgrade.name}</div>
+                    <div class="pill">Lvl ${level}</div>
+                </div>
+
+                <div class="shop-desc">${upgrade.desc}</div>
+
+                <div class="shop-meta">
+                    <span class="pill">${effectText}</span>
+                    <span class="pill">Kosten: ${format(cost)}</span>
+                </div>
+
+                <button class="${canBuy ? "gold-btn" : ""}" onclick="buyUpgrade('${upgrade.id}')" ${canBuy ? "" : "disabled"}>
+                    Kaufen
+                </button>
+            </div>
+        `;
+    }).join("");
+}
+
+function renderMissions() {
+    const box = document.getElementById("missionsList");
+
+    box.innerHTML = missions.map(mission => {
+        const done = !!state.missions[mission.id];
+        const ready = mission.check();
+
+        return `
+            <div class="mission ${done ? "done" : ""}">
+                <b>${done ? "✅" : ready ? "🎁" : "⬜"} ${mission.name}</b>
+                <p style="color:#b8c0d4;margin:7px 0 10px;">${mission.desc}</p>
+                <div class="pill">Belohnung: ${format(mission.reward)} Papier</div>
+            </div>
+        `;
+    }).join("");
+}
+
+function renderAchievements() {
+    const box = document.getElementById("achievementsList");
+
+    box.innerHTML = achievements.map(achievement => {
+        const done = !!state.achievements[achievement.id];
+
+        return `
+            <div class="achievement ${done ? "done" : ""}">
+                <b>${done ? "🏆" : "🔒"} ${achievement.name}</b>
+                <p style="color:#b8c0d4;margin:7px 0 0;">${achievement.desc}</p>
+            </div>
+        `;
+    }).join("");
+}
+
+function renderLog() {
+    const box = document.getElementById("logList");
+
+    if (logs.length === 0) {
+        box.innerHTML = `<div class="log-line">Noch keine Ereignisse.</div>`;
         return;
     }
 
-    player.circleCooldown = 4800;
-
-    const radius = 5 * meter;
-    let hits = 0;
-
-    monsters.forEach((monster) => {
-        if (!monster.alive) {
-            return;
-        }
-
-        const d = distance(player.x, player.y, monster.x, monster.y);
-
-        if (d <= radius) {
-            damageMonster(monster, 55);
-            hits++;
-        }
-    });
-
-    effects.push({
-        type: "circle",
-        x: player.x,
-        y: player.y,
-        radius: radius,
-        life: 480,
-        maxLife: 480,
-        color: "#ffd861"
-    });
-
-    createBurst(player.x, player.y, "#ffd861", 26);
-    showMessage("🌀 Kreis-Schlag trifft " + hits + " Monster.");
+    box.innerHTML = logs.slice(-30).reverse().map(line => {
+        return `<div class="log-line">${line}</div>`;
+    }).join("");
 }
 
-function skillDive() {
-    if (!player.golden) {
-        showMessage("Du brauchst zuerst das Entwicklungsbonbon.");
-        return;
+function updateUI() {
+    document.getElementById("paperText").textContent = format(state.paper);
+    document.getElementById("ppsText").textContent = format(getPPS());
+    document.getElementById("clickText").textContent = format(getClickPower());
+    document.getElementById("levelText").textContent = state.level;
+    document.getElementById("prestigeText").textContent = state.prestigePoints;
+
+    document.getElementById("xpText").textContent = format(state.xp) + " / " + format(state.xpNeed) + " XP";
+    document.getElementById("xpFill").style.width = Math.min(100, (state.xp / state.xpNeed) * 100) + "%";
+
+    document.getElementById("prestigeBonusText").textContent = Math.round((getPrestigeMultiplier() - 1) * 100) + "%";
+    document.getElementById("possiblePrestigeText").textContent = getPossiblePrestige();
+
+    renderShop();
+    renderMissions();
+    renderAchievements();
+    renderLog();
+}
+
+function gameTick() {
+    const pps = getPPS();
+
+    if (pps > 0) {
+        const gain = pps / 10;
+        addPaper(gain, true);
+        gainXP(pps > 1000 ? 2 : 1);
     }
 
-    if (player.diveCooldown > 0) {
-        return;
-    }
-
-    const target = findClosestMonster(900);
-
-    if (!target) {
-        showMessage("Kein Monster als Ziel.");
-        return;
-    }
-
-    player.diveCooldown = 1;
-
-    effects.push({
-        type: "beam",
-        x1: player.x,
-        y1: player.y,
-        x2: target.x,
-        y2: target.y,
-        life: 340,
-        maxLife: 340,
-        color: "#fff2a6"
-    });
-
-    player.x = target.x - 48;
-    player.y = target.y;
-
-    damageMonster(target, 115);
-
-    effects.push({
-        type: "impact",
-        x: target.x,
-        y: target.y,
-        radius: 105,
-        life: 520,
-        maxLife: 520,
-        color: "#ffd861"
-    });
-
-    createBurst(target.x, target.y, "#ffd861", 46);
-    showMessage("⚡ Himmelssturz!");
+    checkAchievements();
+    updateUI();
 }
 
-function findClosestMonster(maxRange) {
-    let best = null;
-    let bestDistance = Infinity;
+function spawnFloat(x, y, text, color) {
+    const el = document.createElement("div");
+    el.className = "float-text";
+    el.textContent = text;
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    el.style.color = color;
 
-    monsters.forEach((monster) => {
-        if (!monster.alive) {
-            return;
-        }
+    document.body.appendChild(el);
 
-        const d = distance(player.x, player.y, monster.x, monster.y);
-
-        if (d < bestDistance && d <= maxRange) {
-            bestDistance = d;
-            best = monster;
-        }
-    });
-
-    return best;
+    setTimeout(() => {
+        el.remove();
+    }, 900);
 }
 
-function damageMonster(monster, damage) {
-    if (!monster.alive) {
-        return;
-    }
-
-    monster.hp -= damage;
-
-    showSmallText(monster.x, monster.y - 32, "-" + damage, "#ffd861");
-    createBurst(monster.x, monster.y, "#ffcf59", 10);
-
-    if (monster.hp <= 0) {
-        killMonster(monster);
-    }
-}
-
-function killMonster(monster) {
-    monster.alive = false;
-    monster.deadAt = Date.now();
-    monster.hp = 0;
-
-    player.xp += 35;
-    player.gold += 12;
-
-    showSmallText(monster.x, monster.y - 55, "+35 XP  +12 Gold", "#75ff99");
-
-    effects.push({
-        type: "impact",
-        x: monster.x,
-        y: monster.y,
-        radius: 80,
-        life: 460,
-        maxLife: 460,
-        color: "#75ff99"
-    });
-
-    createBurst(monster.x, monster.y, "#75ff99", 22);
-    checkLevelUp();
-}
-
-function checkLevelUp() {
-    while (player.xp >= player.xpNeed) {
-        player.xp -= player.xpNeed;
-        player.level++;
-        player.xpNeed = Math.floor(player.xpNeed * 1.35);
-        player.maxHp += 18;
-        player.hp = player.maxHp;
-        player.baseDamage += 5;
-
-        createBurst(player.x, player.y, "#72b7ff", 38);
-        showMessage("Level Up! Du bist jetzt Level " + player.level + ".");
-    }
-}
-
-function update(deltaTime) {
-    world.time += deltaTime;
-
-    updatePlayer(deltaTime);
-    updateMonsters(deltaTime);
-    updateCooldowns(deltaTime);
-    updateParticles(deltaTime);
-    updateEffects(deltaTime);
-    updateFloatingTexts(deltaTime);
-    updateHud();
-}
-
-function updatePlayer(deltaTime) {
-    let dx = 0;
-    let dy = 0;
-
-    if (keys["w"] || keys["arrowup"]) {
-        dy -= 1;
-    }
-
-    if (keys["s"] || keys["arrowdown"]) {
-        dy += 1;
-    }
-
-    if (keys["a"] || keys["arrowleft"]) {
-        dx -= 1;
-    }
-
-    if (keys["d"] || keys["arrowright"]) {
-        dx += 1;
-    }
-
-    if (dx !== 0 || dy !== 0) {
-        const len = Math.sqrt(dx * dx + dy * dy);
-        dx /= len;
-        dy /= len;
-
-        player.facingX = dx;
-        player.facingY = dy;
-
-        player.x += dx * player.speed;
-        player.y += dy * player.speed;
-    }
-
-    player.x = clamp(player.x, 52, width - 52);
-    player.y = clamp(player.y, 92, height - 52);
-
-    player.wingFrame += deltaTime / 200;
-}
-
-function updateMonsters(deltaTime) {
-    monsters.forEach((monster, index) => {
-        if (!monster.alive) {
-            const elapsed = Date.now() - monster.deadAt;
-
-            if (elapsed >= monsterRespawnTime) {
-                monsters[index] = createMonster(index);
-                showMessage("Ein Monster ist respawnt.");
-            }
-
-            return;
-        }
-
-        monster.wobble += deltaTime / 250;
-
-        const d = distance(monster.x, monster.y, player.x, player.y);
-
-        if (d > monster.radius + player.radius - 4) {
-            const dx = (player.x - monster.x) / d;
-            const dy = (player.y - monster.y) / d;
-
-            monster.x += dx * monster.speed;
-            monster.y += dy * monster.speed;
-        }
-
-        if (monster.attackCooldown > 0) {
-            monster.attackCooldown -= deltaTime;
-        }
-
-        if (d <= monster.radius + player.radius + 8 && monster.attackCooldown <= 0) {
-            monster.attackCooldown = 850;
-            player.hp -= monster.damage;
-
-            if (player.hp < 1) {
-                player.hp = 1;
-            }
-
-            showSmallText(player.x, player.y - 48, "-1", "#ff5f5f");
-        }
-    });
-}
-
-function updateCooldowns(deltaTime) {
-    player.attackCooldown = Math.max(0, player.attackCooldown - deltaTime);
-    player.circleCooldown = Math.max(0, player.circleCooldown - deltaTime);
-    player.diveCooldown = Math.max(0, player.diveCooldown - deltaTime);
-}
-
-function updateParticles(deltaTime) {
-    for (let i = particles.length - 1; i >= 0; i--) {
-        const particle = particles[i];
-
-        particle.life -= deltaTime;
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-        particle.vx *= 0.96;
-        particle.vy *= 0.96;
-
-        if (particle.life <= 0) {
-            particles.splice(i, 1);
-        }
-    }
-}
-
-function updateEffects(deltaTime) {
-    for (let i = effects.length - 1; i >= 0; i--) {
-        effects[i].life -= deltaTime;
-
-        if (effects[i].life <= 0) {
-            effects.splice(i, 1);
-        }
-    }
-}
-
-function updateFloatingTexts(deltaTime) {
-    for (let i = floatingTexts.length - 1; i >= 0; i--) {
-        const text = floatingTexts[i];
-
-        text.life -= deltaTime;
-        text.y -= 0.45;
-
-        if (text.life <= 0) {
-            floatingTexts.splice(i, 1);
-        }
-    }
-}
-
-function draw() {
-    ctx.clearRect(0, 0, width, height);
-
-    drawMap();
-    drawParticles();
-    drawEffectsBack();
-
-    monsters.forEach(drawMonster);
-    drawPlayer();
-
-    drawEffectsFront();
-    drawFloatingTexts();
-}
-
-function drawMap() {
-    const tile = world.tile;
-
-    ctx.fillStyle = "#15351d";
-    ctx.fillRect(0, 0, width, height);
-
-    for (let x = 0; x < width + tile; x += tile) {
-        for (let y = 0; y < height + tile; y += tile) {
-            const even = ((x / tile) + (y / tile)) % 2 === 0;
-
-            ctx.fillStyle = even ? "rgba(255,255,255,0.025)" : "rgba(0,0,0,0.035)";
-            ctx.fillRect(x, y, tile, tile);
-        }
-    }
-
-    drawTerrainBlob(width * 0.22, height * 0.24, 170, 95, "rgba(80,150,75,0.28)");
-    drawTerrainBlob(width * 0.76, height * 0.32, 155, 90, "rgba(70,100,55,0.3)");
-    drawTerrainBlob(width * 0.65, height * 0.76, 180, 110, "rgba(92,65,38,0.28)");
-    drawTerrainBlob(width * 0.18, height * 0.78, 135, 80, "rgba(40,90,55,0.35)");
-
-    drawRock(width * 0.48, height * 0.2, 42);
-    drawRock(width * 0.79, height * 0.62, 52);
-    drawRock(width * 0.32, height * 0.58, 38);
-}
-
-function drawTerrainBlob(x, y, rx, ry, color) {
-    ctx.save();
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-}
-
-function drawRock(x, y, size) {
-    ctx.save();
-    ctx.fillStyle = "rgba(60,62,58,0.48)";
-    ctx.strokeStyle = "rgba(0,0,0,0.24)";
-    ctx.lineWidth = 3;
-
-    ctx.beginPath();
-    ctx.moveTo(x, y - size);
-    ctx.lineTo(x + size * 0.75, y - size * 0.1);
-    ctx.lineTo(x + size * 0.42, y + size * 0.65);
-    ctx.lineTo(x - size * 0.52, y + size * 0.48);
-    ctx.lineTo(x - size * 0.7, y - size * 0.15);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.restore();
-}
-
-function drawPlayer() {
-    ctx.save();
-    ctx.translate(player.x, player.y);
-
-    if (player.golden) {
-        drawGoldenDragon();
-    } else {
-        drawRedDragon();
-    }
-
-    ctx.restore();
-
-    drawHealthBar(player.x, player.y - 62, player.hp, player.maxHp, 72, "#ff4444");
-}
-
-function drawRedDragon() {
-    const flap = Math.sin(player.wingFrame) * 7;
-
-    ctx.save();
-
-    ctx.shadowColor = "rgba(255,60,30,0.75)";
-    ctx.shadowBlur = 15;
-
-    ctx.fillStyle = "rgba(120,25,22,0.86)";
-    ctx.beginPath();
-    ctx.moveTo(-10, -12);
-    ctx.lineTo(-60, -48 - flap);
-    ctx.lineTo(-42, 8);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.moveTo(-10, 12);
-    ctx.lineTo(-60, 48 + flap);
-    ctx.lineTo(-42, -8);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = "#8b1d16";
-    ctx.strokeStyle = "#250504";
-    ctx.lineWidth = 4;
-
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 32, 23, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = "#b12a20";
-    ctx.beginPath();
-    ctx.arc(28, -4, 19, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = "#ffd8a1";
-    ctx.beginPath();
-    ctx.moveTo(18, -23);
-    ctx.lineTo(29, -52);
-    ctx.lineTo(37, -21);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = "#fff";
-    ctx.beginPath();
-    ctx.arc(35, -9, 4.5, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = "#0a0503";
-    ctx.beginPath();
-    ctx.arc(36, -9, 2, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.strokeStyle = "#69110c";
-    ctx.lineWidth = 10;
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(-26, 4);
-    ctx.quadraticCurveTo(-70, 28, -92, 3);
-    ctx.stroke();
-
-    ctx.restore();
-}
-
-function drawGoldenDragon() {
-    const flap = Math.sin(player.wingFrame) * 9;
-
-    ctx.save();
-
-    ctx.shadowColor = "#ffd861";
-    ctx.shadowBlur = 26;
-
-    ctx.fillStyle = "rgba(255,210,68,0.82)";
-    ctx.beginPath();
-    ctx.moveTo(-8, -13);
-    ctx.lineTo(-72, -62 - flap);
-    ctx.lineTo(-45, 12);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.moveTo(-8, 13);
-    ctx.lineTo(-72, 62 + flap);
-    ctx.lineTo(-45, -12);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = "#d49a18";
-    ctx.strokeStyle = "#5c3900";
-    ctx.lineWidth = 4;
-
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 37, 27, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = "#ffc83e";
-    ctx.beginPath();
-    ctx.arc(32, -5, 22, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = "#fff3a8";
-    ctx.beginPath();
-    ctx.moveTo(20, -28);
-    ctx.lineTo(31, -60);
-    ctx.lineTo(40, -25);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(40, -22);
-    ctx.lineTo(59, -48);
-    ctx.lineTo(54, -15);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = "#fff";
-    ctx.beginPath();
-    ctx.arc(40, -10, 5, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = "#1b1200";
-    ctx.beginPath();
-    ctx.arc(41, -10, 2.3, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.strokeStyle = "#ffc83e";
-    ctx.lineWidth = 11;
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(-30, 5);
-    ctx.quadraticCurveTo(-80, 34 + Math.sin(player.wingFrame) * 6, -105, 2);
-    ctx.stroke();
-
-    ctx.restore();
-}
-
-function drawMonster(monster) {
-    if (!monster.alive) {
-        drawRespawnMarker(monster);
-        return;
-    }
-
-    const wobble = Math.sin(monster.wobble) * 3;
-
-    ctx.save();
-    ctx.translate(monster.x, monster.y + wobble);
-
-    ctx.shadowColor = "rgba(130,80,255,0.48)";
-    ctx.shadowBlur = 12;
-
-    ctx.fillStyle = "#342a50";
-    ctx.strokeStyle = "#0c0815";
-    ctx.lineWidth = 4;
-
-    ctx.beginPath();
-    ctx.arc(0, 0, monster.radius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = "#8d78ff";
-    ctx.beginPath();
-    ctx.arc(-8, -7, 5, 0, Math.PI * 2);
-    ctx.arc(8, -7, 5, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = "#181023";
-    ctx.beginPath();
-    ctx.moveTo(-10, 9);
-    ctx.lineTo(0, 17);
-    ctx.lineTo(10, 9);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = "#6750b8";
-    ctx.beginPath();
-    ctx.moveTo(-16, -18);
-    ctx.lineTo(-30, -37);
-    ctx.lineTo(-6, -26);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.moveTo(16, -18);
-    ctx.lineTo(30, -37);
-    ctx.lineTo(6, -26);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.restore();
-
-    drawHealthBar(monster.x, monster.y - 42, monster.hp, monster.maxHp, 52, "#9a64ff");
-}
-
-function drawRespawnMarker(monster) {
-    const remaining = Math.max(0, Math.ceil((monsterRespawnTime - (Date.now() - monster.deadAt)) / 1000));
-
-    ctx.save();
-    ctx.globalAlpha = 0.38;
-    ctx.fillStyle = "#ffffff";
-    ctx.beginPath();
-    ctx.arc(monster.spawnX, monster.spawnY, 18, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = "#e5e5e5";
-    ctx.font = "bold 12px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText(remaining + "s", monster.spawnX, monster.spawnY + 4);
-    ctx.restore();
-}
-
-function drawHealthBar(x, y, value, max, barWidth, color) {
-    const ratio = clamp(value / max, 0, 1);
-
-    ctx.save();
-
-    ctx.fillStyle = "rgba(0,0,0,0.65)";
-    ctx.fillRect(x - barWidth / 2, y, barWidth, 8);
-
-    ctx.fillStyle = color;
-    ctx.fillRect(x - barWidth / 2, y, barWidth * ratio, 8);
-
-    ctx.strokeStyle = "rgba(255,255,255,0.25)";
-    ctx.strokeRect(x - barWidth / 2, y, barWidth, 8);
-
-    ctx.restore();
-}
-
-function drawParticles() {
-    particles.forEach((particle) => {
-        const alpha = particle.life / particle.maxLife;
-
-        ctx.save();
-        ctx.globalAlpha = alpha;
-        ctx.fillStyle = particle.color;
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size * alpha, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-    });
-}
-
-function drawEffectsBack() {
-    effects.forEach((effect) => {
-        const p = effect.life / effect.maxLife;
-
-        if (effect.type === "circle") {
-            ctx.save();
-            ctx.globalAlpha = p;
-            ctx.strokeStyle = effect.color;
-            ctx.lineWidth = 8;
-            ctx.beginPath();
-            ctx.arc(effect.x, effect.y, effect.radius * (1.05 - p * 0.12), 0, Math.PI * 2);
-            ctx.stroke();
-
-            ctx.globalAlpha = p * 0.18;
-            ctx.fillStyle = effect.color;
-            ctx.beginPath();
-            ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-        }
-    });
-}
-
-function drawEffectsFront() {
-    effects.forEach((effect) => {
-        const p = effect.life / effect.maxLife;
-
-        if (effect.type === "slash") {
-            ctx.save();
-            ctx.translate(effect.x, effect.y);
-            ctx.rotate(effect.angle);
-
-            ctx.globalAlpha = p;
-            ctx.strokeStyle = effect.color;
-            ctx.lineWidth = 14;
-            ctx.lineCap = "round";
-
-            ctx.beginPath();
-            ctx.arc(30, 0, 50, -0.8, 0.8);
-            ctx.stroke();
-
-            ctx.restore();
-        }
-
-        if (effect.type === "impact") {
-            ctx.save();
-            ctx.globalAlpha = p;
-            ctx.fillStyle = effect.color;
-
-            ctx.beginPath();
-            ctx.arc(effect.x, effect.y, effect.radius * (1 - p * 0.3), 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.restore();
-        }
-
-        if (effect.type === "beam") {
-            ctx.save();
-            ctx.globalAlpha = p;
-
-            ctx.strokeStyle = effect.color;
-            ctx.lineWidth = 16;
-            ctx.lineCap = "round";
-
-            ctx.beginPath();
-            ctx.moveTo(effect.x1, effect.y1);
-            ctx.lineTo(effect.x2, effect.y2);
-            ctx.stroke();
-
-            ctx.strokeStyle = "rgba(255,255,255,0.9)";
-            ctx.lineWidth = 5;
-
-            ctx.beginPath();
-            ctx.moveTo(effect.x1, effect.y1);
-            ctx.lineTo(effect.x2, effect.y2);
-            ctx.stroke();
-
-            ctx.restore();
-        }
-    });
-}
-
-function drawFloatingTexts() {
-    floatingTexts.forEach((text) => {
-        const alpha = text.life / text.maxLife;
-
-        ctx.save();
-        ctx.globalAlpha = alpha;
-        ctx.fillStyle = text.color;
-        ctx.font = "bold 18px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText(text.text, text.x, text.y);
-        ctx.restore();
-    });
-}
-
-function createBurst(x, y, color, amount) {
+function spawnParticles(x, y, amount) {
     for (let i = 0; i < amount; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = 1 + Math.random() * 4;
+        const p = document.createElement("div");
+        p.className = "particle";
 
-        particles.push({
-            x: x,
-            y: y,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            size: 3 + Math.random() * 5,
-            color: color,
-            life: 500 + Math.random() * 450,
-            maxLife: 950
-        });
+        const dx = (Math.random() - 0.5) * 140 + "px";
+        const dy = (Math.random() - 0.5) * 140 + "px";
+
+        p.style.left = x + "px";
+        p.style.top = y + "px";
+        p.style.setProperty("--dx", dx);
+        p.style.setProperty("--dy", dy);
+        p.style.background = Math.random() > 0.5 ? "#ffd85a" : "#ffffff";
+
+        document.body.appendChild(p);
+
+        setTimeout(() => {
+            p.remove();
+        }, 700);
     }
 }
 
-function showSmallText(x, y, text, color) {
-    floatingTexts.push({
-        x: x,
-        y: y,
-        text: text,
-        color: color,
-        life: 900,
-        maxLife: 900
+function createShopFlash() {
+    const rect = document.getElementById("bigPaper").getBoundingClientRect();
+    spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, 24);
+}
+
+function toast(message) {
+    const t = document.getElementById("toast");
+    t.textContent = message;
+    t.classList.add("show");
+
+    setTimeout(() => {
+        t.classList.remove("show");
+    }, 2600);
+}
+
+function log(message) {
+    const time = new Date().toLocaleTimeString("de-DE", {
+        hour: "2-digit",
+        minute: "2-digit"
     });
-}
 
-let messageTimeout = null;
+    logs.push("[" + time + "] " + message);
 
-function showMessage(text) {
-    const message = document.getElementById("centerMsg");
-    message.textContent = text;
-    message.classList.add("show");
-
-    clearTimeout(messageTimeout);
-
-    messageTimeout = setTimeout(() => {
-        message.classList.remove("show");
-    }, 2200);
-}
-
-function updateHud() {
-    document.getElementById("hpText").textContent = Math.floor(player.hp);
-    document.getElementById("maxHpText").textContent = Math.floor(player.maxHp);
-    document.getElementById("hpBar").style.width = clamp(player.hp / player.maxHp, 0, 1) * 100 + "%";
-
-    document.getElementById("xpText").textContent = Math.floor(player.xp);
-    document.getElementById("xpNeedText").textContent = Math.floor(player.xpNeed);
-    document.getElementById("xpBar").style.width = clamp(player.xp / player.xpNeed, 0, 1) * 100 + "%";
-
-    document.getElementById("levelText").textContent = player.level;
-    document.getElementById("goldText").textContent = player.gold;
-    document.getElementById("formText").textContent = player.golden ? "Goldener Drache" : "Nahkampfdrache";
-
-    const aliveCount = monsters.filter((monster) => monster.alive).length;
-    document.getElementById("monsterCountText").textContent = aliveCount;
-
-    updateButtonCooldowns();
-}
-
-function updateButtonCooldowns() {
-    const attackOverlay = document.getElementById("attackCd");
-    const skill1Overlay = document.getElementById("skill1Cd");
-    const skill2Overlay = document.getElementById("skill2Cd");
-
-    const attackButton = document.getElementById("attackBtn");
-    const skill1Button = document.getElementById("skill1Btn");
-    const skill2Button = document.getElementById("skill2Btn");
-
-    if (player.attackCooldown > 0) {
-        attackOverlay.style.display = "flex";
-        attackOverlay.textContent = Math.ceil(player.attackCooldown / 1000);
-    } else {
-        attackOverlay.style.display = "none";
-    }
-
-    if (!player.golden) {
-        skill1Button.classList.add("locked");
-        skill2Button.classList.add("locked");
-        skill1Overlay.style.display = "flex";
-        skill2Overlay.style.display = "flex";
-        skill1Overlay.textContent = "Bonbon nötig";
-        skill2Overlay.textContent = "Bonbon nötig";
-        return;
-    }
-
-    skill1Button.classList.remove("locked");
-    skill2Button.classList.remove("locked");
-
-    if (player.circleCooldown > 0) {
-        skill1Overlay.style.display = "flex";
-        skill1Overlay.textContent = Math.ceil(player.circleCooldown / 1000);
-    } else {
-        skill1Overlay.style.display = "none";
-    }
-
-    if (player.diveCooldown > 0) {
-        skill2Overlay.style.display = "flex";
-        skill2Overlay.textContent = Math.ceil(player.diveCooldown / 1000);
-    } else {
-        skill2Overlay.style.display = "none";
+    if (logs.length > 80) {
+        logs.shift();
     }
 }
 
-function distance(x1, y1, x2, y2) {
-    const dx = x2 - x1;
-    const dy = y2 - y1;
+window.addEventListener("beforeunload", saveGame);
 
-    return Math.sqrt(dx * dx + dy * dy);
-}
+setInterval(gameTick, 100);
+setInterval(saveGame, 5000);
 
-function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
-}
+loadGame();
+updateUI();
 
-let lastTime = performance.now();
-
-function gameLoop(now) {
-    const deltaTime = Math.min(40, now - lastTime);
-    lastTime = now;
-
-    update(deltaTime);
-    draw();
-
-    requestAnimationFrame(gameLoop);
-}
-
-showMessage("Willkommen im PvE-Test. Öffne das Inventar und rüste das Entwicklungsbonbon aus.");
-requestAnimationFrame(gameLoop);
+toast("Willkommen in Paper Empire Idle.");
 </script>
 
 </body>

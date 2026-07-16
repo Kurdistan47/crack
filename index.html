@@ -592,7 +592,7 @@ function createMonster(index) {
 function initializeMonsters() {
     monsters.length = 0;
 
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 400; i++) {
         monsters.push(createMonster(i));
     }
 }
@@ -627,6 +627,43 @@ function basicAttack() {
     if (player.attackCooldown > 0) {
         return;
     }
+
+    player.attackCooldown = 1;
+
+    const radius = 10 * meter;
+    let hits = 0;
+
+    monsters.forEach((monster) => {
+        if (!monster.alive) {
+            return;
+        }
+
+        const d = distance(player.x, player.y, monster.x, monster.y);
+
+        if (d <= radius) {
+            damageMonster(monster, 1000);
+            hits++;
+        }
+    });
+
+    effects.push({
+        type: "circle",
+        x: player.x,
+        y: player.y,
+        radius: radius,
+        life: 420,
+        maxLife: 420,
+        color: player.golden ? "#ffd861" : "#ff5d45"
+    });
+
+    createBurst(player.x, player.y, player.golden ? "#ffd861" : "#ff5d45", 28);
+
+    if (hits > 0) {
+        showMessage("Normaler Angriff trifft " + hits + " Monster für 1000 Schaden.");
+    } else {
+        showSmallText(player.x, player.y - 45, "Kein Ziel im Radius", "#d8d8d8");
+    }
+}
 
     player.attackCooldown = 650;
 

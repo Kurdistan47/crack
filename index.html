@@ -390,7 +390,7 @@ body {
         Form: <b id="formText">Nahkampfdrache</b><br>
         Gold: <b id="goldText">0</b><br>
         Monster: <b id="monsterCountText">4</b>/4<br>
-        Respawn: <b>120s</b>
+        Respawn: <b>12s</b>
     </div>
 </div>
 
@@ -550,7 +550,7 @@ const player = {
     wingFrame: 0
 };
 
-const monsterRespawnTime = 120000;
+const monsterRespawnTime = 12;
 
 const monsters = [];
 const effects = [];
@@ -592,7 +592,7 @@ function createMonster(index) {
 function initializeMonsters() {
     monsters.length = 0;
 
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 40; i++) {
         monsters.push(createMonster(i));
     }
 }
